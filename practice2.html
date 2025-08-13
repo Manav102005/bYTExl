@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Product Filter</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+      margin: 0;
+      padding: 0;
+      color: #1e293b;
+      min-height: 100vh;
+    }
+    h1 {
+      text-align: center;
+      margin: 32px 0 18px 0;
+      font-size: 2.2rem;
+      color: #2563eb;
+      letter-spacing: 1px;
+      font-weight: 700;
+      text-shadow: 0 2px 8px #b6caff44;
+    }
+    .filter-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+    .filter-label {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #334155;
+    }
+    .custom-select {
+      position: relative;
+      display: inline-block;
+      width: 180px;
+    }
+    select {
+      width: 100%;
+      padding: 12px 40px 12px 16px;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 1.5px solid #2563eb;
+      background: #fff url('https://img.icons8.com/ios-filled/24/2563eb/expand-arrow.png') no-repeat right 12px center/18px;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.07);
+      cursor: pointer;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      appearance: none;
+      outline: none;
+    }
+    select:focus, select:hover {
+      border-color: #1e40af;
+      box-shadow: 0 6px 16px rgba(37,99,235,0.13);
+    }
+    .product-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 28px;
+      padding: 0 24px 40px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .product {
+      background: linear-gradient(120deg, #fff 80%, #e0eafc 100%);
+      padding: 32px 18px 24px 18px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 4px 18px rgba(37,99,235,0.09);
+      font-weight: 500;
+      font-size: 1.13rem;
+      color: #334155;
+      position: relative;
+      transition: transform 0.25s, box-shadow 0.25s, opacity 0.3s;
+      opacity: 1;
+      display: block;
+      animation: fadeIn 0.5s;
+    }
+    .product.hide {
+      opacity: 0;
+      pointer-events: none;
+      animation: fadeOut 0.4s;
+      transition: opacity 0.3s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.97);}
+      to { opacity: 1; transform: scale(1);}
+    }
+    @keyframes fadeOut {
+      from { opacity: 1;}
+      to { opacity: 0;}
+    }
+    .badge {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: linear-gradient(90deg, #2563eb 60%, #60a5fa 100%);
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 8px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px #2563eb22;
+      text-transform: capitalize;
+      user-select: none;
+    }
+    .product:hover {
+      transform: translateY(-8px) scale(1.03);
+      box-shadow: 0 10px 32px rgba(37,99,235,0.18);
+    }
+    .empty-state {
+      grid-column: 1/-1;
+      text-align: center;
+      color: #64748b;
+      font-size: 1.2rem;
+      padding: 40px 0;
+      opacity: 0.85;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 900px) {
+      .product-list {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 18px;
+        padding: 0 8px 32px 8px;
+      }
+      .product {
+        font-size: 1rem;
+        padding: 24px 10px 18px 10px;
+      }
+    }
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.3rem;
+        margin: 18px 0 12px 0;
+      }
+      .filter-bar {
+        gap: 8px;
+        margin-bottom: 18px;
+      }
+      .custom-select {
+        width: 100%;
+        max-width: 220px;
+      }
+      .product-list {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 0 2px 18px 2px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🛍 Product Filter</h1>
+  <div class="filter-bar">
+    <span class="filter-label">Filter by category:</span>
+    <div class="custom-select">
+      <select id="categoryFilter">
+        <option value="all">All</option>
+        <option value="shoes">👟 Shoes</option>
+        <option value="shirts">👕 Shirts</option>
+        <option value="gadgets">📱 Gadgets</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="product-list" id="productList">
+    <div class="product" data-category="shoes">
+      Running Shoes
+      <span class="badge">Shoes</span>
+    </div>
+    <div class="product" data-category="shoes">
+      Sneakers
+      <span class="badge">Shoes</span>
+    </div>
+    <div class="product" data-category="shirts">
+      Polo Shirt
+      <span class="badge">Shirts</span>
+    </div>
+    <div class="product" data-category="shirts">
+      Casual T-Shirt
+      <span class="badge">Shirts</span>
+    </div>
+    <div class="product" data-category="gadgets">
+      Smartphone
+      <span class="badge">Gadgets</span>
+    </div>
+    <div class="product" data-category="gadgets">
+      Wireless Earbuds
+      <span class="badge">Gadgets</span>
+    </div>
+  </div>
+
+  <script>
+    const categoryFilter = document.getElementById('categoryFilter');
+    const productList = document.getElementById('productList');
+    const products = document.querySelectorAll('.product');
+
+    function filterProducts() {
+      const selectedCategory = categoryFilter.value;
+      let visibleCount = 0;
+
+      products.forEach(product => {
+        const productCategory = product.getAttribute('data-category');
+        if (selectedCategory === 'all' || productCategory === selectedCategory) {
+          product.classList.remove('hide');
+          visibleCount++;
+        } else {
+          product.classList.add('hide');
+        }
+      });
+
+      // Empty state message
+      let emptyState = document.querySelector('.empty-state');
+      if (visibleCount === 0) {
+        if (!emptyState) {
+          emptyState = document.createElement('div');
+          emptyState.className = 'empty-state';
+          emptyState.textContent = 'No products found for this category.';
+          productList.appendChild(emptyState);
+        }
+      } else {
+        if (emptyState) emptyState.remove();
+      }
+    }
+
+    categoryFilter.addEventListener('change', filterProducts);
+
+    // Initial filter (in case you want to set a default)
+    filterProducts();
+  </script>
+</body>
+</html>
