@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVG Drawing Tool</title>
+  <style>
+    body {
+      font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+      margin: 0;
+      padding: 0;
+      color: #1e293b;
+      min-height: 100vh;
+    }
+    h1 {
+      text-align: center;
+      margin: 32px 0 18px 0;
+      font-size: 2.2rem;
+      color: #2563eb;
+      letter-spacing: 1px;
+      font-weight: 700;
+      text-shadow: 0 2px 8px #b6caff44;
+    }
+    .canvas-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 32px;
+    }
+    svg {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 18px rgba(37,99,235,0.09);
+      border: 2px solid #2563eb;
+      touch-action: none;
+      width: 90vw;
+      max-width: 700px;
+      height: 400px;
+      cursor: crosshair;
+      user-select: none;
+    }
+    .instructions {
+      text-align: center;
+      color: #334155;
+      font-size: 1.1rem;
+      margin-top: 12px;
+      opacity: 0.8;
+    }
+    @media (max-width: 700px) {
+      svg {
+        height: 250px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🖌 SVG Drawing Tool</h1>
+  <div class="instructions">
+    Click and drag inside the canvas to draw rectangles.<br>
+    Draw as many as you like!
+  </div>
+  <div class="canvas-container">
+    <svg id="drawingCanvas"></svg>
+  </div>
+  <script>
+    const svg = document.getElementById('drawingCanvas');
+    let drawing = false;
+    let startX = 0, startY = 0;
+    let currentRect = null;
+
+    // Get mouse position relative to SVG
+    function getMousePosition(evt) {
+      const rect = svg.getBoundingClientRect();
+      return {
+        x: evt.clientX - rect.left,
+        y: evt.clientY - rect.top
+      };
+    }
+
+    svg.addEventListener('mousedown', function(evt) {
+      drawing = true;
+      const pos = getMousePosition(evt);
+      startX = pos.x;
+      startY = pos.y;
+      currentRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      currentRect.setAttribute('x', startX);
+      currentRect.setAttribute('y', startY);
+      currentRect.setAttribute('width', 0);
+      currentRect.setAttribute('height', 0);
+      currentRect.setAttribute('fill', '#60a5fa44');
+      currentRect.setAttribute('stroke', '#2563eb');
+      currentRect.setAttribute('stroke-width', '2');
+      svg.appendChild(currentRect);
+    });
+
+    svg.addEventListener('mousemove', function(evt) {
+      if (!drawing || !currentRect) return;
+      const pos = getMousePosition(evt);
+      const width = Math.abs(pos.x - startX);
+      const height = Math.abs(pos.y - startY);
+      currentRect.setAttribute('x', Math.min(pos.x, startX));
+      currentRect.setAttribute('y', Math.min(pos.y, startY));
+      currentRect.setAttribute('width', width);
+      currentRect.setAttribute('height', height);
+    });
+
+    svg.addEventListener('mouseup', function(evt) {
+      drawing = false;
+      currentRect = null;
+    });
+
+    svg.addEventListener('mouseleave', function(evt) {
+      drawing = false;
+      currentRect = null;
+    });
+  </script>
+</body>
+</html>
